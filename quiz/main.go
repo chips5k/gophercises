@@ -16,7 +16,7 @@ func main() {
 
 	f, err := os.Open(*filename)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not open problems.csv: %v", err)
+		fmt.Fprintf(os.Stderr, "Could not open %s: %v", *filename, err)
 		os.Exit(1)
 	}
 
@@ -24,16 +24,17 @@ func main() {
 
 	d, err := r.ReadAll()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse problems.csv: %v", err)
+		fmt.Fprintf(os.Stderr, "Could not parse %s: %v", *filename, err)
 		os.Exit(1)
 	}
 
+	fmt.Scanf()
 	c := 0
 	s := bufio.NewScanner(os.Stdin)
 	for _, q := range d {
 		fmt.Print(strings.Replace(q[0], "?", "", 1) + "? ")
 		s.Scan()
-		if s.Text() == strings.Trim(q[1], " ") {
+		if s.Text() == strings.TrimSpace(q[1]) {
 			c++
 		}
 	}
