@@ -3,14 +3,18 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
 
-	f, err := os.Open("problems.csv")
+	filename := flag.String("filename", "problems.csv", "the filename/path of a csv to read problems from")
+	flag.Parse()
 
+	f, err := os.Open(*filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not open problems.csv: %v", err)
 		os.Exit(1)
@@ -27,9 +31,9 @@ func main() {
 	c := 0
 	s := bufio.NewScanner(os.Stdin)
 	for _, q := range d {
-		fmt.Print(q[0] + "? ")
+		fmt.Print(strings.Replace(q[0], "?", "", 1) + "? ")
 		s.Scan()
-		if s.Text() == q[1] {
+		if s.Text() == strings.Trim(q[1], " ") {
 			c++
 		}
 	}
@@ -38,3 +42,11 @@ func main() {
 
 	os.Exit(0)
 }
+
+//Test cases
+/*
+- reads in csv file defaults to problem.csv
+- specify filename via flag
+
+
+*/
