@@ -27,8 +27,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not parse %s: %v", *filename, err)
 		os.Exit(1)
 	}
-
-	fmt.Scanf()
+	
 	c := 0
 	s := bufio.NewScanner(os.Stdin)
 	for _, q := range d {
