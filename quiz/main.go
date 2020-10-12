@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	filename := flag.String("filename", "problems.csv", "the filename/path of a csv to read problems from")
+	filename := flag.String("filename", "problems.csv", "the filename/path of a csv in the format \"question,answer\"")
 	flag.Parse()
 
 	f, err := os.Open(*filename)
