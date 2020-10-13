@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 func main() {
 	duration := flag.Int("duration", 30, "time limit in seconds to complete the quiz")
 	filename := flag.String("filename", "problems.csv", "the filename/path of a csv in the format \"question,answer\"")
+	shuffle := flag.Bool("shuffle", false, "Randomizes the order of questions")
 	flag.Parse()
 
 	f, err := os.Open(*filename)
@@ -23,19 +25,25 @@ func main() {
 
 	r := csv.NewReader(f)
 
-	d, err := r.ReadAll()
+	questions, err := r.ReadAll()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not parse %s: %v", *filename, err)
 		os.Exit(1)
 	}
 	
-	
+	if *shuffle {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(questions), func(i, j int) {
+			questions[i], questions[j] = questions[j], questions[i]
+		})
+	}
+
 	fmt.Print("Press enter to begin")
 	fmt.Scan()
-	result := make(chan bool, len(d))
+	result := make(chan bool, len(questions))
 	done := make(chan bool)
 	timer := time.NewTimer(time.Duration(*duration) * time.Second)
-	go quiz(d, result, done)
+	go quiz(questions, result, done)
 	count := 0
 	running := true
 	for running {
@@ -52,7 +60,7 @@ func main() {
 		}
 	}
 
-	fmt.Printf("\nResults: %d/%d\n", count, len(d))
+	fmt.Printf("\nResults: %d/%d\n", count, len(questions))
 
 	os.Exit(0)
 }
