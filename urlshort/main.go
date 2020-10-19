@@ -13,7 +13,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -55,13 +54,13 @@ func main() {
 	}
 
 	if *df != "" {
-		
+
 		err := populateBolt(*df)
-		if err != nil { 
+		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to populate DB: %v\n", err)
 			os.Exit(1)
 		}
-		
+
 		o, err := loadBolt(*df)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to load from DB: %v\n", err)
@@ -72,9 +71,8 @@ func main() {
 		}
 	}
 
-
 	registerMappings(mappings, mux)
-	
+
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
@@ -84,17 +82,16 @@ func loadBolt(filename string) ([]map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
 
 	m := make([]map[string]string, 0)
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("mappings"))
 		c := b.Cursor()
-		
+
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			m = append(m, map[string]string{
 				"path": string(k),
-				"url": string(v),
+				"url":  string(v),
 			})
 			fmt.Println(k, v)
 		}
@@ -143,7 +140,7 @@ func loadYAML(filename string) ([]map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = yaml.Unmarshal(f, &o)
 	if err != nil {
 		return nil, err
@@ -151,7 +148,6 @@ func loadYAML(filename string) ([]map[string]string, error) {
 	return o, nil
 
 }
-
 
 func loadJSON(filename string) ([]map[string]string, error) {
 
@@ -161,7 +157,7 @@ func loadJSON(filename string) ([]map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = json.Unmarshal(f, &o)
 	if err != nil {
 		return nil, err

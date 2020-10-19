@@ -30,7 +30,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not parse %s: %v", *filename, err)
 		os.Exit(1)
 	}
-	
+
 	if *shuffle {
 		rand.Seed(time.Now().UnixNano())
 		rand.Shuffle(len(questions), func(i, j int) {
@@ -48,15 +48,15 @@ func main() {
 	running := true
 	for running {
 		select {
-			case r := <-result:
-				if r { 
-					count++
-				}
-			case <-timer.C: 
-				fmt.Print("\nTimes up!\n")
-				running = false
-			case <-done:
-				running = false
+		case r := <-result:
+			if r {
+				count++
+			}
+		case <-timer.C:
+			fmt.Print("\nTimes up!\n")
+			running = false
+		case <-done:
+			running = false
 		}
 	}
 
@@ -64,8 +64,6 @@ func main() {
 
 	os.Exit(0)
 }
-
-
 
 func quiz(questions [][]string, result chan bool, done chan bool) {
 	s := bufio.NewScanner(os.Stdin)
@@ -75,5 +73,5 @@ func quiz(questions [][]string, result chan bool, done chan bool) {
 		s.Scan()
 		result <- (s.Text() == strings.TrimSpace(q[1]))
 	}
-	done <- true 
+	done <- true
 }
