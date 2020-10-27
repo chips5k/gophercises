@@ -93,7 +93,6 @@ func loadBolt(filename string) ([]map[string]string, error) {
 				"path": string(k),
 				"url":  string(v),
 			})
-			fmt.Println(k, v)
 		}
 		return nil
 	})
