@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type option struct {
@@ -30,6 +31,19 @@ type handler struct {
 }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	arc := strings.TrimLeft(r.URL.Path, "/")
+
+	if arc == "" {
+		arc = "intro"
+	}
+
+	content, ok := h.Story[arc]
+
+	if !ok {
+		http.Error(w, "Not found", 400)
+		return
+	}
+
 	t, err := template.New("main").Parse(`
 		<!doctype html>
 		<html>
@@ -38,6 +52,12 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				{{ range .Story }}
 					<p>{{ . }}
 				{{ end }}
+				<hr />
+				<ul>
+				{{ range .Options }}
+					<li><a href="/{{ .Arc }}">{{ .Text }}</a></li>
+				{{ end }}
+				</ul>
 			</body>
 		</html>
 	`)
@@ -47,7 +67,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t.Execute(w, h.Story[h.Start])
+	t.Execute(w, content)
 }
 
 func main() {
