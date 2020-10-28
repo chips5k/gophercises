@@ -40,7 +40,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	content, ok := h.Story[arc]
 
 	if !ok {
-		http.Error(w, "Not found", 400)
+		http.Error(w, "Not found", 404)
 		return
 	}
 
