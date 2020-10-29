@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -82,15 +81,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	bb, err := ioutil.ReadAll(f)
-	if err != nil {
-
-		fmt.Fprintf(os.Stderr, "Failed to read file: %v", err)
-		os.Exit(1)
-	}
+	d := json.NewDecoder(f)
 
 	s := make(story)
-	err = json.Unmarshal(bb, &s)
+	err = d.Decode(&s)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to unmarshal json: %v", err)
 		os.Exit(1)
